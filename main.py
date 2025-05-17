@@ -35,6 +35,8 @@ def next_question():
         st.session_state['answers'].append(st.session_state['current_answer'])
         st.session_state['question_number'] += 1
         st.session_state['current_answer'] = None  # 다음 질문 시 현재 답변 초기화
+    else:
+        st.warning("답변을 선택해주세요.")
 
 def prev_question():
     if st.session_state['question_number'] > 1:
@@ -107,7 +109,7 @@ if st.session_state['question_number'] > 0 and st.session_state['question_number
     st.subheader(f"질문 {st.session_state['question_number']}")
     st.write(current_question)
 
-    st.session_state['current_answer'] = st.radio("선택하세요", choices, index=choices.index(st.session_state['current_answer']) if st.session_state['current_answer'] in choices else 2) # 이전 선택 유지 또는 초기값 설정
+    st.session_state['current_answer'] = st.radio("선택하세요", choices, index=None) # 초기값 없도록 설정
 
     cols = st.columns([1, 1])
     if st.session_state['question_number'] > 1:

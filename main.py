@@ -6,8 +6,6 @@ if 'answers' not in st.session_state:
     st.session_state['answers'] = []
 if 'current_answer' not in st.session_state:
     st.session_state['current_answer'] = None
-if 'next_button_clicked' not in st.session_state:
-    st.session_state['next_button_clicked'] = False
 if 'mbti_calculated' not in st.session_state:
     st.session_state['mbti_calculated'] = False
 
@@ -30,7 +28,6 @@ def start_test():
     st.session_state['question_number'] = 1
     st.session_state['answers'] = []
     st.session_state['current_answer'] = None
-    st.session_state['next_button_clicked'] = False
     st.session_state['mbti_calculated'] = False
 
 def next_question():
@@ -38,7 +35,6 @@ def next_question():
         st.session_state['answers'].append(st.session_state['current_answer'])
         st.session_state['question_number'] += 1
         st.session_state['current_answer'] = None
-        st.session_state['next_button_clicked'] = True
     else:
         st.warning("답변을 선택해주세요.")
 
@@ -49,7 +45,6 @@ def prev_question():
             st.session_state['current_answer'] = st.session_state['answers'].pop()
         else:
             st.session_state['current_answer'] = None
-        st.session_state['next_button_clicked'] = False
 
 def calculate_mbti():
     e_i_score = 0
@@ -121,11 +116,8 @@ if st.session_state['question_number'] > 0 and st.session_state['question_number
         if cols[0].button("이전 질문"):
             prev_question()
     if cols[1].button("다음 질문"):
-        st.session_state['next_button_clicked'] = True
         next_question()
 
-    if st.session_state['next_button_clicked']:
-        st.session_state['next_button_clicked'] = False # Reset the flag
 elif st.session_state['question_number'] > len(questions) and not st.session_state['mbti_calculated']:
     calculate_mbti()
     st.session_state['mbti_calculated'] = True

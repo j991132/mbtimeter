@@ -40,6 +40,10 @@ def prev_question():
             st.session_state['current_selection'] = st.session_state['answers'][st.session_state['question_number'] - 1]
         else:
             st.session_state['current_selection'] = None
+        # 디버깅: 상태 업데이트 후 로그
+        st.write(f"이전 질문 클릭 - 질문 번호: {st.session_state['question_number']}, 선택: {st.session_state['current_selection']}, 답변 리스트: {st.session_state['answers']}")
+        # 즉시 재실행
+        st.rerun()
 
 def calculate_mbti():
     scores = {"E/I": 0, "S/N": 0, "T/F": 0, "J/P": 0}
@@ -57,7 +61,7 @@ def calculate_mbti():
     )
     mbti_type = "".join(mbti_result)
     st.subheader("당신의 MBTI 성향은...")
-    st.write(f"**{mbti_type}** 입니다!")
+    st.write(f"**Busy** 입니다!")
     st.write("예: INTJ는 전략적 사고와 독립적인 성향으로 알려진 '건축가'입니다.")
 
 st.title("나의 MBTI 성향 알아보기")
@@ -107,7 +111,7 @@ if 1 <= st.session_state['question_number'] <= len(questions):
             st.session_state['current_selection'] = None
             # 디버깅: 상태 업데이트 후 로그
             st.write(f"다음 질문 클릭 - 선택: {st.session_state['current_selection']}, 질문 번호: {st.session_state['question_number']}, 답변 리스트: {st.session_state['answers']}")
-            # 상태 업데이트 후 즉시 재실행
+            # 즉시 재실행
             st.rerun()
         else:
             st.warning("답변을 선택해주세요.")

@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 
 # 세션 상태 초기화
 if 'question_number' not in st.session_state:
@@ -76,6 +77,15 @@ if 1 <= st.session_state['question_number'] <= len(questions):
     st.progress(st.session_state['question_number'] / len(questions))
     st.write(f"질문 {st.session_state['question_number']} / {len(questions)}")
     st.subheader(f"질문 {st.session_state['question_number']}")
+
+    # 이미지 표시
+    image_path = f"images/{st.session_state['question_number']}.png"
+    if os.path.exists(image_path):
+        st.image(image_path, caption=f"질문 {st.session_state['question_number']} 이미지", use_column_width=True)
+    else:
+        st.warning(f"이미지 {image_path}를 찾을 수 없습니다. 파일 경로를 확인해주세요.")
+
+    # 질문 텍스트
     st.write(current_question)
 
     # 이전 답변을 기본값으로 설정

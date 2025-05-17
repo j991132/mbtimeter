@@ -61,7 +61,8 @@ def calculate_mbti():
     )
     mbti_type = "".join(mbti_result)
     st.subheader("당신의 MBTI 성향은...")
-    st.write(f"**Busy** 입니다!")
+    st.write(f"**{mbti_type}** 입니다!")
+    st.write(f"계산된 MBTI: {mbti_type}")  # 디버깅: 계산된 MBTI 확인
     st.write("예: INTJ는 전략적 사고와 독립적인 성향으로 알려진 '건축가'입니다.")
 
 st.title("나의 MBTI 성향 알아보기")

@@ -96,7 +96,7 @@ if 1 <= st.session_state['question_number'] <= len(questions):
     if st.session_state['question_number'] > 1:
         if cols[0].button("이전 질문", key=f"prev_{st.session_state['question_number']}"):
             prev_question()
-    if cols[1].button("다음 질문", key=f"next_{st.session_state['question_number']}"):
+    if cols[1].button("다음 질문", key=f"next_{st.session_state['question_number']}", disabled=not st.session_state['current_selection']):
         if st.session_state['current_selection']:
             # 답변 저장
             if len(st.session_state['answers']) < st.session_state['question_number']:
@@ -107,8 +107,8 @@ if 1 <= st.session_state['question_number'] <= len(questions):
             st.session_state['current_selection'] = None
             # 디버깅: 상태 업데이트 후 로그
             st.write(f"다음 질문 클릭 - 선택: {st.session_state['current_selection']}, 질문 번호: {st.session_state['question_number']}, 답변 리스트: {st.session_state['answers']}")
-            # 강제로 재실행해 즉시 다음 질문 표시
-            st.experimental_rerun()
+            # 상태 업데이트 후 즉시 재실행
+            st.rerun()
         else:
             st.warning("답변을 선택해주세요.")
 

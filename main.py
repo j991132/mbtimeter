@@ -197,9 +197,9 @@ def calculate_mbti():
         positive_letter, negative_letter = letter
         positive_percentage = percentages[dim]
         negative_percentage = 100 - positive_percentage
-        # 글자 크기: 19px (0%) ~ 51px (100%)
-        font_sizes[positive_letter] = 19 + (positive_percentage / 100) * (51 - 19)
-        font_sizes[negative_letter] = 19 + (negative_percentage / 100) * (51 - 19)
+        # 글자 크기: 19px (0%) ~ 67px (100%), 1.5배 차이
+        font_sizes[positive_letter] = 19 + (positive_percentage / 100) * (67 - 19)
+        font_sizes[negative_letter] = 19 + (negative_percentage / 100) * (67 - 19)
         percentage_values[positive_letter] = positive_percentage
         percentage_values[negative_letter] = negative_percentage
 
@@ -301,6 +301,8 @@ elif st.session_state['question_number'] > len(questions) and not st.session_sta
         st.warning("모든 질문에 답변해주세요!")
     if st.button("테스트 다시 시작", key="restart_test"):
         start_test()
+        st.rerun()
 elif st.session_state['mbti_calculated']:
     if st.button("테스트 다시 시작", key="restart_test_final"):
         start_test()
+        st.rerun()

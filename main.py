@@ -7,6 +7,8 @@ if 'answers' not in st.session_state:
     st.session_state['answers'] = []
 if 'mbti_calculated' not in st.session_state:
     st.session_state['mbti_calculated'] = False
+if 'current_selection' not in st.session_state:
+    st.session_state['current_selection'] = None
 
 # 질문과 MBTI 매핑 (질문, 차원, 방향: 1 또는 -1)
 questions = [
@@ -28,10 +30,16 @@ def start_test():
     st.session_state['question_number'] = 1
     st.session_state['answers'] = []
     st.session_state['mbti_calculated'] = False
+    st.session_state['current_selection'] = None
 
 def prev_question():
     if st.session_state['question_number'] > 1:
         st.session_state['question_number'] -= 1
+        # 이전 답변 로드
+        if len(st.session_state['answers']) >= st.session_state['question_number']:
+            st.session_state['current_selection'] = st.session_state['answers'][st.session_state['question_number'] - 1]
+        else:
+            st.session_state['current_selection'] = None
 
 def calculate_mbti():
     scores = {"E/I": 0, "S/N": 0, "T/F": 0, "J/P": 0}
@@ -69,30 +77,36 @@ if 1 <= st.session_state['question_number'] <= len(questions):
     default_answer = None
     if len(st.session_state['answers']) >= st.session_state['question_number']:
         default_answer = st.session_state['answers'][st.session_state['question_number'] - 1]
+    else:
+        default_answer = st.session_state['current_selection']
 
     # 라디오 버튼
-    selected_answer = st.radio(
+    st.session_state['current_selection'] = st.radio(
         "선택하세요",
         choices,
         index=choices.index(default_answer) if default_answer in choices else None,
         key=f"radio_{st.session_state['question_number']}",
     )
 
-    # 디버깅: 현재 선택된 답변 표시
-    st.write(f"현재 선택: {selected_answer if selected_answer else '없음'}")
+    # 디버깅: 현재 선택된 답변 및 상태 표시
+    st.write(f"현재 선택: {st.session_state['current_selection'] if st.session_state['current_selection'] else '없음'}")
+    st.write(f"저장된 답변: {st.session_state['answers']}")
 
     cols = st.columns([1, 1])
     if st.session_state['question_number'] > 1:
         if cols[0].button("이전 질문", key=f"prev_{st.session_state['question_number']}"):
             prev_question()
     if cols[1].button("다음 질문", key=f"next_{st.session_state['question_number']}"):
-        if selected_answer:
+        # 디버깅: 버튼 클릭 시 상태 로그
+        st.write(f"다음 질문 클릭 - 선택: {st.session_state['current_selection']}, 질문 번호: {st.session_state['question_number']}")
+        if st.session_state['current_selection']:
             # 답변 저장
             if len(st.session_state['answers']) < st.session_state['question_number']:
-                st.session_state['answers'].append(selected_answer)
+                st.session_state['answers'].append(st.session_state['current_selection'])
             else:
-                st.session_state['answers'][st.session_state['question_number'] - 1] = selected_answer
+                st.session_state['answers'][st.session_state['question_number'] - 1] = st.session_state['current_selection']
             st.session_state['question_number'] += 1
+            st.session_state['current_selection'] = None
         else:
             st.warning("답변을 선택해주세요.")
 

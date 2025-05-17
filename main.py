@@ -78,30 +78,31 @@ if 1 <= st.session_state['question_number'] <= len(questions):
     st.write(f"질문 {st.session_state['question_number']} / {len(questions)}")
     st.subheader(f"질문 {st.session_state['question_number']}")
 
-    # 이미지 표시
-    image_path = f"images/{st.session_state['question_number']}.png"
-    if os.path.exists(image_path):
-        st.image(image_path, caption=f"질문 {st.session_state['question_number']} 이미지", use_column_width=True)
-    else:
-        st.warning(f"이미지 {image_path}를 찾을 수 없습니다. 파일 경로를 확인해주세요.")
+    # 질문과 이미지를 좌우로 배치
+    cols = st.columns([2, 1])  # 왼쪽(질문): 2, 오른쪽(이미지): 1 비율
+    with cols[0]:
+        st.write(current_question)
+        # 이전 답변을 기본값으로 설정
+        default_answer = None
+        if len(st.session_state['answers']) >= st.session_state['question_number']:
+            default_answer = st.session_state['answers'][st.session_state['question_number'] - 1]
+        else:
+            default_answer = st.session_state['current_selection']
 
-    # 질문 텍스트
-    st.write(current_question)
+        # 라디오 버튼
+        st.session_state['current_selection'] = st.radio(
+            "선택하세요",
+            choices,
+            index=choices.index(default_answer) if default_answer in choices else None,
+            key=f"radio_{st.session_state['question_number']}",
+        )
 
-    # 이전 답변을 기본값으로 설정
-    default_answer = None
-    if len(st.session_state['answers']) >= st.session_state['question_number']:
-        default_answer = st.session_state['answers'][st.session_state['question_number'] - 1]
-    else:
-        default_answer = st.session_state['current_selection']
-
-    # 라디오 버튼
-    st.session_state['current_selection'] = st.radio(
-        "선택하세요",
-        choices,
-        index=choices.index(default_answer) if default_answer in choices else None,
-        key=f"radio_{st.session_state['question_number']}",
-    )
+    with cols[1]:
+        image_path = f"images/{st.session_state['question_number']}.png"
+        if os.path.exists(image_path):
+            st.image(image_path, caption=f"질문 {st.session_state['question_number']} 이미지", use_container_width=True, width=300)
+        else:
+            st.warning(f"이미지 {image_path}를 찾을 수 없습니다. 파일 경로를 확인해주세요.")
 
     # 디버깅: 현재 선택된 답변 및 상태 표시
     st.write(f"현재 선택: {st.session_state['current_selection'] if st.session_state['current_selection'] else '없음'}")

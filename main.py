@@ -33,25 +33,19 @@ def start_test():
     st.session_state['nav_direction'] = None
     st.session_state['mbti_calculated'] = False
 
-def navigate_question():
-    if st.session_state['nav_direction'] == 'next':
-        if st.session_state['current_answer'] is not None:
-            if st.session_state['question_number'] <= len(questions):
-                if len(st.session_state['answers']) < st.session_state['question_number'] - 1:
-                    st.session_state['answers'].append(st.session_state['current_answer'])
-                elif len(st.session_state['answers']) == st.session_state['question_number'] - 1:
-                    st.session_state['answers'].append(st.session_state['current_answer'])
-                else:
-                    st.session_state['answers'][st.session_state['question_number'] - 2] = st.session_state['current_answer']
-                st.session_state['question_number'] += 1
-                st.session_state['current_answer'] = None
-        elif st.session_state['question_number'] <= len(questions):
-            st.warning("답변을 선택해주세요.")
-    elif st.session_state['nav_direction'] == 'prev':
-        if st.session_state['question_number'] > 1:
-            st.session_state['question_number'] -= 1
+def next_question():
+    if st.session_state['current_answer'] is not None:
+        st.session_state['answers'].append(st.session_state['current_answer'])
+        st.session_state['question_number'] += 1
+        st.session_state['current_answer'] = None
+    else:
+        st.warning("답변을 선택해주세요.")
+
+def prev_question():
+    if st.session_state['question_number'] > 1:
+        st.session_state['question_number'] -= 1
+        if st.session_state['answers']:
             st.session_state['current_answer'] = st.session_state['answers'][st.session_state['question_number'] - 2] if st.session_state['answers'] and st.session_state['question_number'] > 1 else None
-    st.session_state['nav_direction'] = None
 
 def calculate_mbti():
     e_i_score = 0
@@ -121,11 +115,9 @@ if st.session_state['question_number'] > 0 and st.session_state['question_number
     cols = st.columns([1, 1])
     if st.session_state['question_number'] > 1:
         if cols[0].button("이전 질문"):
-            st.session_state['nav_direction'] = 'prev'
-            navigate_question()
+            prev_question()
     if cols[1].button("다음 질문"):
-        st.session_state['nav_direction'] = 'next'
-        navigate_question()
+        next_question()
 
 elif st.session_state['question_number'] > len(questions) and not st.session_state['mbti_calculated']:
     calculate_mbti()

@@ -31,7 +31,7 @@ def start_test():
 
 def next_question(selected_answer):
     if selected_answer:
-        # 현재 질문에 대한 답변을 저장
+        # 현재 질문에 대한 답변 저장
         if len(st.session_state['answers']) < st.session_state['question_number']:
             st.session_state['answers'].append(selected_answer)
         else:
@@ -66,7 +66,7 @@ def calculate_mbti():
 st.title("나의 MBTI 성향 알아보기")
 st.write("일상생활과 관련된 10가지 질문에 답하고 당신의 MBTI 성향을 알아보세요!")
 
-if st.button("MBTI 테스트 시작"):
+if st.button("MBTI 테스트 시작", key="start_test"):
     start_test()
 
 if 1 <= st.session_state['question_number'] <= len(questions):
@@ -97,13 +97,13 @@ if 1 <= st.session_state['question_number'] <= len(questions):
         next_question(selected_answer)
 
 elif st.session_state['question_number'] > len(questions) and not st.session_state['mbti_calculated']:
-    if len ENERGY(st.session_state['answers']) == len(questions):
+    if len(st.session_state['answers']) == len(questions):
         calculate_mbti()
         st.session_state['mbti_calculated'] = True
     else:
         st.warning("모든 질문에 답변해주세요!")
-    if st.button("테스트 다시 시작"):
+    if st.button("테스트 다시 시작", key="restart_test"):
         start_test()
 elif st.session_state['mbti_calculated']:
-    if st.button("테스트 다시 시작"):
+    if st.button("테스트 다시 시작", key="restart_test_final"):
         start_test()

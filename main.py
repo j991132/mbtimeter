@@ -42,9 +42,7 @@ def prev_question():
     if st.session_state['question_number'] > 1:
         st.session_state['question_number'] -= 1
         if st.session_state['answers']:
-            st.session_state['current_answer'] = st.session_state['answers'].pop()
-        else:
-            st.session_state['current_answer'] = None
+            st.session_state['current_answer'] = st.session_state['answers'][st.session_state['question_number'] - 2] if st.session_state['answers'] and st.session_state['question_number'] > 1 else None
 
 def calculate_mbti():
     e_i_score = 0
@@ -113,10 +111,23 @@ if st.session_state['question_number'] > 0 and st.session_state['question_number
 
     cols = st.columns([1, 1])
     if st.session_state['question_number'] > 1:
-        if cols[0].button("이전 질문"):
-            prev_question()
-    if cols[1].button("다음 질문"):
-        next_question()
+        if cols[0].button("이전 질문", key="prev_button"):
+            st.session_state['question_number'] -= 1
+            if st.session_state['answers'] and st.session_state['question_number'] > 0:
+                st.session_state['current_answer'] = st.session_state['answers'][st.session_state['question_number'] - 1]
+            else:
+                st.session_state['current_answer'] = None
+    if cols[1].button("다음 질문", key="next_button"):
+        if st.session_state['current_answer'] is not None:
+            if st.session_state['question_number'] <= len(questions):
+                if len(st.session_state['answers']) < st.session_state['question_number']:
+                    st.session_state['answers'].append(st.session_state['current_answer'])
+                elif len(st.session_state['answers']) == st.session_state['question_number']:
+                    st.session_state['answers'][st.session_state['question_number'] - 1] = st.session_state['current_answer']
+                st.session_state['question_number'] += 1
+                st.session_state['current_answer'] = None
+        else:
+            st.warning("답변을 선택해주세요.")
 
 elif st.session_state['question_number'] > len(questions) and not st.session_state['mbti_calculated']:
     calculate_mbti()

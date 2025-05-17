@@ -4,6 +4,8 @@ if 'question_number' not in st.session_state:
     st.session_state['question_number'] = 0
 if 'answers' not in st.session_state:
     st.session_state['answers'] = []
+if 'current_answer' not in st.session_state:
+    st.session_state['current_answer'] = None
 if 'mbti_calculated' not in st.session_state:
     st.session_state['mbti_calculated'] = False
 
@@ -25,7 +27,22 @@ choices = ["매우 그렇다", "그렇다", "보통이다", "그렇지 않다", 
 def start_test():
     st.session_state['question_number'] = 1
     st.session_state['answers'] = []
+    st.session_state['current_answer'] = None
     st.session_state['mbti_calculated'] = False
+
+def next_question():
+    if st.session_state['current_answer'] is not None:
+        st.session_state['answers'].append(st.session_state['current_answer'])
+        st.session_state['question_number'] += 1
+        st.session_state['current_answer'] = None  # 다음 질문 시 현재 답변 초기화
+
+def prev_question():
+    if st.session_state['question_number'] > 1:
+        st.session_state['question_number'] -= 1
+        if st.session_state['answers']:
+            st.session_state['current_answer'] = st.session_state['answers'].pop()
+        else:
+            st.session_state['current_answer'] = None
 
 def calculate_mbti():
     e_i_score = 0
@@ -90,10 +107,15 @@ if st.session_state['question_number'] > 0 and st.session_state['question_number
     st.subheader(f"질문 {st.session_state['question_number']}")
     st.write(current_question)
 
-    answer = st.radio("선택하세요", choices)
-    if st.button("다음 질문"):
-        st.session_state['answers'].append(answer)
-        st.session_state['question_number'] += 1
+    st.session_state['current_answer'] = st.radio("선택하세요", choices, index=choices.index(st.session_state['current_answer']) if st.session_state['current_answer'] in choices else 2) # 이전 선택 유지 또는 초기값 설정
+
+    cols = st.columns([1, 1])
+    if st.session_state['question_number'] > 1:
+        if cols[0].button("이전 질문"):
+            prev_question()
+    if cols[1].button("다음 질문"):
+        next_question()
+
 elif st.session_state['question_number'] > len(questions) and not st.session_state['mbti_calculated']:
     calculate_mbti()
     st.session_state['mbti_calculated'] = True

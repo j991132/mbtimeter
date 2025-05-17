@@ -1,27 +1,25 @@
 import streamlit as st
 
-# Initialize session state
+# 세션 상태 초기화
 if 'question_number' not in st.session_state:
     st.session_state['question_number'] = 0
 if 'answers' not in st.session_state:
     st.session_state['answers'] = []
-if 'current_answer' not in st.session_state:
-    st.session_state['current_answer'] = None
 if 'mbti_calculated' not in st.session_state:
     st.session_state['mbti_calculated'] = False
 
-# Questions and their MBTI mapping (question, dimension, direction: 1 or -1)
+# 질문과 MBTI 매핑 (질문, 차원, 방향: 1 또는 -1)
 questions = [
-    ("주말에 주로 혼자 시간을 보내는 편이다.", "E/I", -1),  # Favors I
-    ("새로운 사람을 만나는 것에 부담을 느끼지 않는다.", "E/I", 1),  # Favors E
-    ("계획을 세우고 꼼꼼하게 따르는 것을 좋아한다.", "J/P", 1),  # Favors J
-    ("다른 사람의 감정에 쉽게 공감하는 편이다.", "T/F", -1),  # Favors F
-    ("아이디어가 떠오르면 바로 실행에 옮기는 편이다.", "J/P", -1),  # Favors P
-    ("규칙이나 틀에 얽매이는 것을 싫어한다.", "J/P", -1),  # Favors P
-    ("주변 사람들에게 조용하고 신중하다는 말을 듣는 편이다.", "E/I", -1),  # Favors I
-    ("여럿이 함께 하는 활동에서 에너지를 얻는 편이다.", "E/I", 1),  # Favors E
-    ("미래에 대한 가능성보다 현재의 확실한 것을 중요하게 생각한다.", "S/N", 1),  # Favors S
-    ("나만의 독특한 방식으로 표현하는 것을 즐긴다.", "S/N", -1),  # Favors N
+    ("주말에 주로 혼자 시간을 보내는 편이다.", "E/I", -1),  # I 선호
+    ("새로운 사람을 만나는 것에 부담을 느끼지 않는다.", "E/I", 1),  # E 선호
+    ("계획을 세우고 꼼꼼하게 따르는 것을 좋아한다.", "J/P", 1),  # J 선호
+    ("다른 사람의 감정에 쉽게 공감하는 편이다.", "T/F", -1),  # F 선호
+    ("아이디어가 떠오르면 바로 실행에 옮기는 편이다.", "J/P", -1),  # P 선호
+    ("규칙이나 틀에 얽매이는 것을 싫어한다.", "J/P", -1),  # P 선호
+    ("주변 사람들에게 조용하고 신중하다는 말을 듣는 편이다.", "E/I", -1),  # I 선호
+    ("여럿이 함께 하는 활동에서 에너지를 얻는 편이다.", "E/I", 1),  # E 선호
+    ("미래에 대한 가능성보다 현재의 확실한 것을 중요하게 생각한다.", "S/N", 1),  # S 선호
+    ("나만의 독특한 방식으로 표현하는 것을 즐긴다.", "S/N", -1),  # N 선호
 ]
 
 choices = ["매우 그렇다", "그렇다", "보통이다", "그렇지 않다", "매우 그렇지 않다"]
@@ -29,30 +27,22 @@ choices = ["매우 그렇다", "그렇다", "보통이다", "그렇지 않다", 
 def start_test():
     st.session_state['question_number'] = 1
     st.session_state['answers'] = []
-    st.session_state['current_answer'] = None
     st.session_state['mbti_calculated'] = False
 
 def next_question(selected_answer):
-    if selected_answer is not None:
-        # Append the selected answer to the answers list
+    if selected_answer:
+        # 현재 질문에 대한 답변을 저장
         if len(st.session_state['answers']) < st.session_state['question_number']:
             st.session_state['answers'].append(selected_answer)
         else:
-            # Update the answer if revisiting a question
             st.session_state['answers'][st.session_state['question_number'] - 1] = selected_answer
         st.session_state['question_number'] += 1
-        st.session_state['current_answer'] = None
     else:
         st.warning("답변을 선택해주세요.")
 
 def prev_question():
     if st.session_state['question_number'] > 1:
         st.session_state['question_number'] -= 1
-        # Load the previous answer, if available
-        if len(st.session_state['answers']) >= st.session_state['question_number']:
-            st.session_state['current_answer'] = st.session_state['answers'][st.session_state['question_number'] - 1]
-        else:
-            st.session_state['current_answer'] = None
 
 def calculate_mbti():
     scores = {"E/I": 0, "S/N": 0, "T/F": 0, "J/P": 0}
@@ -71,7 +61,6 @@ def calculate_mbti():
     mbti_type = "".join(mbti_result)
     st.subheader("당신의 MBTI 성향은...")
     st.write(f"**{mbti_type}** 입니다!")
-    # Example MBTI description
     st.write("예: INTJ는 전략적 사고와 독립적인 성향으로 알려진 '건축가'입니다.")
 
 st.title("나의 MBTI 성향 알아보기")
@@ -87,24 +76,28 @@ if 1 <= st.session_state['question_number'] <= len(questions):
     st.subheader(f"질문 {st.session_state['question_number']}")
     st.write(current_question)
 
-    # Get the current answer from the radio button
+    # 이전 답변을 기본값으로 설정
+    default_answer = None
+    if len(st.session_state['answers']) >= st.session_state['question_number']:
+        default_answer = st.session_state['answers'][st.session_state['question_number'] - 1]
+
+    # 라디오 버튼에서 선택된 답변 가져오기
     selected_answer = st.radio(
         "선택하세요",
         choices,
-        index=choices.index(st.session_state['current_answer']) if st.session_state['current_answer'] in choices else None,
+        index=choices.index(default_answer) if default_answer in choices else None,
         key=f"radio_{st.session_state['question_number']}",
     )
-    st.session_state['current_answer'] = selected_answer
 
     cols = st.columns([1, 1])
     if st.session_state['question_number'] > 1:
-        if cols[0].button("이전 질문"):
+        if cols[0].button("이전 질문", key=f"prev_{st.session_state['question_number']}"):
             prev_question()
-    if cols[1].button("다음 질문"):
+    if cols[1].button("다음 질문", key=f"next_{st.session_state['question_number']}"):
         next_question(selected_answer)
 
 elif st.session_state['question_number'] > len(questions) and not st.session_state['mbti_calculated']:
-    if len(st.session_state['answers']) == len(questions):
+    if len ENERGY(st.session_state['answers']) == len(questions):
         calculate_mbti()
         st.session_state['mbti_calculated'] = True
     else:

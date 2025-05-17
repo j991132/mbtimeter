@@ -70,23 +70,42 @@ def calculate_mbti():
     )
     mbti_type = "".join(mbti_result)
 
-    # 글자 크기 계산
+    # 글자 크기 및 색상
     font_sizes = {}
+    font_colors = {
+        "E": "#A3BFFA", "I": "#FDCFE8", "S": "#C3E6CB", "N": "#FFE7BA",
+        "T": "#B5EAEA", "F": "#FFCCF9", "J": "#D4A5A5", "P": "#E2E2E2"
+    }
+    percentage_values = {}
     for dim, letter in zip(["E/I", "S/N", "T/F", "J/P"], [("E", "I"), ("S", "N"), ("T", "F"), ("J", "P")]):
         positive_letter, negative_letter = letter
         positive_percentage = percentages[dim]
         negative_percentage = 100 - positive_percentage
-        # 글자 크기: 16px (0%) ~ 48px (100%)
-        font_sizes[positive_letter] = 16 + (positive_percentage / 100) * (48 - 16)
-        font_sizes[negative_letter] = 16 + (negative_percentage / 100) * (48 - 16)
+        # 글자 크기: 19px (0%) ~ 51px (100%)
+        font_sizes[positive_letter] = 19 + (positive_percentage / 100) * (51 - 19)
+        font_sizes[negative_letter] = 19 + (negative_percentage / 100) * (51 - 19)
+        percentage_values[positive_letter] = positive_percentage
+        percentage_values[negative_letter] = negative_percentage
 
     st.subheader("당신의 MBTI 성향은...")
-    # MBTI 유형 표시 (글자 크기 적용)
+    # MBTI 유형 표시 (글자 크기, 색상, 비율, 중앙 정렬)
     mbti_display = "".join(
-        f'<span style="font-size:{font_sizes[letter]:.2f}px">{letter}</span>'
+        f'<div class="mbti-letter" style="display: inline-block; text-align: center; margin: 0 10px;">'
+        f'<span style="font-size:{font_sizes[letter]:.2f}px; color:{font_colors[letter]}">{letter}</span>'
+        f'<div style="font-size:16px; color:{font_colors[letter]}">{percentage_values[letter]:.1f}%</div>'
+        f'</div>'
         for letter in mbti_type
     )
-    st.markdown(f"**{mbti_display}** 입니다!", unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <style>
+        .mbti-result {{ text-align: center; margin: 20px auto; }}
+        .mbti-letter {{ margin: 0 10px; }}
+        </style>
+        <div class="mbti-result">**{mbti_display}** 입니다!</div>
+        """,
+        unsafe_allow_html=True
+    )
     st.write("예: INTJ는 전략적 사고와 독립적인 성향으로 알려진 '건축가'입니다.")
 
 st.title("나의 MBTI 성향 알아보기")

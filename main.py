@@ -197,18 +197,20 @@ def calculate_mbti():
         positive_letter, negative_letter = letter
         positive_percentage = percentages[dim]
         negative_percentage = 100 - positive_percentage
-        # 글자 크기: 19px (0%) ~ 67px (100%), 1.5배 차이
+        # 글자 크기: 19px (0%) ~ 67px (100%)
         font_sizes[positive_letter] = 19 + (positive_percentage / 100) * (67 - 19)
         font_sizes[negative_letter] = 19 + (negative_percentage / 100) * (67 - 19)
         percentage_values[positive_letter] = positive_percentage
         percentage_values[negative_letter] = negative_percentage
 
     st.subheader("당신의 MBTI 성향은...")
-    # MBTI 유형 표시 (글자 크기, 색상, 비율, 중앙 정렬)
+    # MBTI 유형 표시 (글자 크기, 색상, 비율, 대/소문자, 중앙 정렬)
     mbti_display = "".join(
         f'<div class="mbti-letter" style="display: inline-block; text-align: center; margin: 0 10px;">'
-        f'<span style="font-size:{font_sizes[letter]:.2f}px; color:{font_colors[letter]}">{letter}</span>'
-        f'<div style="font-size:16px; color:{font_colors[letter]}">{percentage_values[letter]:.1f}%</div>'
+        f'<span style="font-size:{font_sizes[letter]:.2f}px; color:{font_colors[letter]}">'
+        f'{letter.upper() if percentage_values[letter] > 50 else letter.lower()}</span>'
+        f'<div style="font-size:16px; color:{font_colors[letter]}">'
+        f'{percentage_values[letter]:.1f}%</div>'
         f'</div>'
         for letter in mbti_type
     )

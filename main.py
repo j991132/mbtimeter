@@ -63,7 +63,6 @@ def calculate_mbti():
     mbti_type = "".join(mbti_result)
     st.subheader("당신의 MBTI 성향은...")
     st.write(f"**{mbti_type}** 입니다!")
-    st.write(f"계산된 MBTI: {mbti_type}")  # 디버깅: 계산된 MBTI 확인
     st.write("예: INTJ는 전략적 사고와 독립적인 성향으로 알려진 '건축가'입니다.")
 
 st.title("나의 MBTI 성향 알아보기")
@@ -103,10 +102,6 @@ if 1 <= st.session_state['question_number'] <= len(questions):
             st.image(image_path, caption=f"질문 {st.session_state['question_number']} 이미지", use_container_width=True, width=300)
         else:
             st.warning(f"이미지 {image_path}를 찾을 수 없습니다. 파일 경로를 확인해주세요.")
-
-    # 디버깅: 현재 선택된 답변 및 상태 표시
-    st.write(f"현재 선택: {st.session_state['current_selection'] if st.session_state['current_selection'] else '없음'}")
-    st.write(f"저장된 답변: {st.session_state['answers']}")
 
     cols = st.columns([1, 1])
     if st.session_state['question_number'] > 1:

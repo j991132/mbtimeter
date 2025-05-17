@@ -65,38 +65,36 @@ if 1 <= st.session_state['question_number'] <= len(questions):
     st.subheader(f"질문 {st.session_state['question_number']}")
     st.write(current_question)
 
-    # 폼을 사용해 답변 제출 관리
-    with st.form(key=f"question_form_{st.session_state['question_number']}"):
-        # 이전 답변을 기본값으로 설정
-        default_answer = None
-        if len(st.session_state['answers']) >= st.session_state['question_number']:
-            default_answer = st.session_state['answers'][st.session_state['question_number'] - 1]
+    # 이전 답변을 기본값으로 설정
+    default_answer = None
+    if len(st.session_state['answers']) >= st.session_state['question_number']:
+        default_answer = st.session_state['answers'][st.session_state['question_number'] - 1]
 
-        # 라디오 버튼
-        selected_answer = st.radio(
-            "선택하세요",
-            choices,
-            index=choices.index(default_answer) if default_answer in choices else None,
-            key=f"radio_{st.session_state['question_number']}",
-        )
+    # 라디오 버튼
+    selected_answer = st.radio(
+        "선택하세요",
+        choices,
+        index=choices.index(default_answer) if default_answer in choices else None,
+        key=f"radio_{st.session_state['question_number']}",
+    )
 
-        # 폼 제출 버튼
-        submitted = st.form_submit_button("다음 질문")
-        if submitted:
-            if selected_answer:
-                # 답변 저장
-                if len(st.session_state['answers']) < st.session_state['question_number']:
-                    st.session_state['answers'].append(selected_answer)
-                else:
-                    st.session_state['answers'][st.session_state['question_number'] - 1] = selected_answer
-                st.session_state['question_number'] += 1
-            else:
-                st.warning("답변을 선택해주세요.")
+    # 디버깅: 현재 선택된 답변 표시
+    st.write(f"현재 선택: {selected_answer if selected_answer else '없음'}")
 
-    # 이전 질문 버튼은 폼 밖에 배치
+    cols = st.columns([1, 1])
     if st.session_state['question_number'] > 1:
-        if st.button("이전 질문", key=f"prev_{st.session_state['question_number']}"):
+        if cols[0].button("이전 질문", key=f"prev_{st.session_state['question_number']}"):
             prev_question()
+    if cols[1].button("다음 질문", key=f"next_{st.session_state['question_number']}"):
+        if selected_answer:
+            # 답변 저장
+            if len(st.session_state['answers']) < st.session_state['question_number']:
+                st.session_state['answers'].append(selected_answer)
+            else:
+                st.session_state['answers'][st.session_state['question_number'] - 1] = selected_answer
+            st.session_state['question_number'] += 1
+        else:
+            st.warning("답변을 선택해주세요.")
 
 elif st.session_state['question_number'] > len(questions) and not st.session_state['mbti_calculated']:
     if len(st.session_state['answers']) == len(questions):
